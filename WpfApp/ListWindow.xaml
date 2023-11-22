@@ -34,8 +34,9 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                                        <Button Content="PDF" Click="ShowInvoice_OnClick" Margin="0,0,10,0"/>
                                         <Button Content="PDF" Click="PDF_OnClick" Margin="0,0,10,0"/>
-                                        <Button Content="Excel" Click="Excel_OnClick" Margin="0,0,10,0"/>
+                                        <Button Content="Excel" Click="Excel_OnClick"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

@@ -1,5 +1,8 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +25,8 @@ namespace WpfApp
             DataContext = new
             {
                 Username = username,
-                Customers = customers
+                Customers = customers,
+                Invoices = new List<CustomerInvoice>()
             };
         }
 
@@ -39,20 +43,38 @@ namespace WpfApp
 
         public async void ShowInvoice_OnClick(object sender, RoutedEventArgs e)
         {
-
+            var customer = (e.Source as Button).DataContext as Customer;
+            var invoices = (await Requests.GetRequest<IEnumerable<CustomerInvoice>>($"Queries/allInvoices/{customer.CusCode}")).ToList();
         }
 
         public async void PDF_OnClick(object sender, RoutedEventArgs e)
         {
+            var customer = (e.Source as Button).DataContext as Customer;
+            var invoices = (await Requests.GetRequest<IEnumerable<CustomerInvoice>>($"Queries/allInvoices/{customer.CusCode}")).ToList();
 
+            using (var pdfCreator = new PdfCreator(ListWindowHelpers.CreateHtml(invoices)))
+            {
+                // do sth with the stream
+            }
         }
 
         public async void Excel_OnClick(object sender, RoutedEventArgs e)
         {
-
+            var customer = (e.Source as Button).DataContext as Customer;
+            var invoices = (await Requests.GetRequest<IEnumerable<CustomerInvoice>>($"Queries/allInvoices/{customer.CusCode}")).ToList();
+            using (var writer = new StreamWriter(new MemoryStream()))
+            {
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(invoices);
+                    csv.Flush();
+                }
+                writer.Flush();
+            }
+            
         }
 
-        public async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
+        public void LogoutButton_OnClick(object sender, RoutedEventArgs e)
         {
             new MainWindow().Show();
             Close();
