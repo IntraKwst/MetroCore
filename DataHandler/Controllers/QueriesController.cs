@@ -19,6 +19,13 @@ namespace DataHandler.Controllers
             return Ok(_dbContext.Customers.Skip(pageSize * (pageNo - 1)).Take(pageSize).ToList());
         }
 
+        [HttpGet("allInvoices/{id}")]
+        public IActionResult AllInvoices(int id)
+        {
+            var invoices = _dbContext.CustomerInvoices.Where(x => x.CusCode == id).ToList();
+            return Ok(invoices);
+        }
+
         [HttpGet("customerCount")]
         public IActionResult GetCount(int pageNo, int pageSize)
         {
